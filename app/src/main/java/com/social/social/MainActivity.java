@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
   }
 
   private void loginWithFb() {
-    faceBookHelper.login();
+    faceBookHelper.login(true);
   }
 
   @Override

@@ -109,7 +109,7 @@ public class FaceBookHelper {
                 if (isImageDownload) {
                   downloadImage(userId, user);
                 } else {
-                  user.setProfileImageLocal(generateImagePath(userId));
+                  user.setProfileImage(generateImagePath(userId));
                   onLoginSuccess(user);
                 }
               } catch (JSONException e) {
@@ -131,7 +131,7 @@ public class FaceBookHelper {
         super.onPostExecute(e);
         if (e == null) {
           user.setProfileImage(imageUrl);
-          user.setProfileImage(getFinalImagePath());
+          user.setProfileImageLocal(getFinalImagePath());
           onLoginSuccess(user);
         } else {
           if (e instanceof ImageException) {
