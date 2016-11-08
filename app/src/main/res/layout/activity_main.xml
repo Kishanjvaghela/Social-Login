@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context="com.social.social.MainActivity"
     >
-</RelativeLayout>
+  <Button
+      android:id="@+id/login"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/btn_login_with_fb"
+      />
+
+  <TextView
+      android:id="@+id/status"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:textSize="16sp"
+      tools:text="Success"
+      />
+  <TextView
+      android:id="@+id/resultText"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:textSize="14sp"
+      tools:text="result"
+      />
+</LinearLayout>

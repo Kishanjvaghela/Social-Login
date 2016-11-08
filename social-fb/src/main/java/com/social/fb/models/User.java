@@ -68,4 +68,17 @@ public class User {
   public void setProfileImageLocal(String profileImageLocal) {
     this.profileImageLocal = profileImageLocal;
   }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Id : ").append(id).append("\n");
+    builder.append("Name : ").append(name).append("\n");
+    builder.append("Dob : ").append(dob).append("\n");
+    builder.append("Email : ").append(email).append("\n");
+    builder.append("Bio : ").append(bio).append("\n");
+    builder.append("ProfileImage : ").append(profileImage).append("\n");
+    builder.append("ProfileImageLocal : ").append(profileImageLocal);
+    return builder.toString();
+  }
 }

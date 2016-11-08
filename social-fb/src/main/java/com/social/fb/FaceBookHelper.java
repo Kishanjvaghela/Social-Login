@@ -1,6 +1,7 @@
 package com.social.fb;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -42,7 +43,8 @@ public class FaceBookHelper {
     callbackManager = CallbackManager.Factory.create();
   }
 
-  public static void init(String fbId) {
+  public static void init(Context context, String fbId) {
+    FacebookSdk.sdkInitialize(context);
     FacebookSdk.setApplicationId(fbId);
   }
 
