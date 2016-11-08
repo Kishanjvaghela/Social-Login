@@ -84,6 +84,10 @@ public class FaceBookHelper {
             Arrays.asList("email", "public_profile", "user_birthday", "user_about_me"));
   }
 
+  public void logout() {
+    LoginManager.getInstance().logOut();
+  }
+
   private void getData(final String userId, final boolean isImageDownload) {
     new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userId, null, HttpMethod.GET,
         new GraphRequest.Callback() {
