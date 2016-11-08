@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">Social FB</string>
+  <string name="no_url_found">No url found</string>
+  <string name="please_try_again">Please try again</string>
+</resources>
