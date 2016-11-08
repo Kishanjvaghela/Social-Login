@@ -19,6 +19,7 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.social.fb.downloader.ImageDownloaderTask;
 import com.social.fb.downloader.ImageException;
+import com.social.fb.models.User;
 import com.social.fb.utils.Utils;
 import java.util.Arrays;
 import org.json.JSONException;
@@ -45,24 +46,25 @@ public class FaceBookHelper {
   }
 
   public void login() {
+
+  }
+
+  public void login(final boolean isImageDownload) {
     LoginManager.getInstance()
         .registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
           @Override
           public void onSuccess(LoginResult loginResult) {
             Log.d(TAG, loginResult.toString());
-            getData(loginResult.getAccessToken().getUserId());
-            // App code
+            getData(loginResult.getAccessToken().getUserId(), isImageDownload);
           }
 
           @Override
           public void onCancel() {
-            // App code
             onLoginError(null);
           }
 
           @Override
           public void onError(FacebookException exception) {
-            // App code
             Log.d(TAG, exception.toString());
             onLoginError(exception.toString());
           }
@@ -72,8 +74,8 @@ public class FaceBookHelper {
             Arrays.asList("email", "public_profile", "user_birthday", "user_about_me"));
   }
 
-  private void getData(final String userid) {
-    new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userid, null, HttpMethod.GET,
+  private void getData(final String userId, final boolean isImageDownload) {
+    new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userId, null, HttpMethod.GET,
         new GraphRequest.Callback() {
           public void onCompleted(GraphResponse response) {
             /* handle the result */
@@ -88,7 +90,18 @@ public class FaceBookHelper {
                 }
                 String aboutMe = object.has("bio") ? (String) object.get("bio") : "";
                 String email = object.has("email") ? (String) object.get("email") : "";
-                downloadImage(userid, name, dob, aboutMe, email);
+                User user = new User();
+                user.setId(userId);
+                user.setName(name);
+                user.setDob(dob);
+                user.setBio(aboutMe);
+                user.setEmail(email);
+                if (isImageDownload) {
+                  downloadImage(userId, user);
+                } else {
+                  user.setProfileImageLocal(generateImagePath(userId));
+                  onLoginSuccess(user);
+                }
               } catch (JSONException e) {
                 e.printStackTrace();
                 onLoginError();
@@ -100,17 +113,16 @@ public class FaceBookHelper {
         }).executeAsync();
   }
 
-  private void downloadImage(final String userId, final String name, final String dob,
-      final String aboutMe, final String email) {
-    String imageUrl = "https://graph.facebook.com/" + userId + "/picture?type=large";
+  private void downloadImage(final String userId, final User user) {
+    final String imageUrl = generateImagePath(userId);
     new ImageDownloaderTask(imageUrl, activity.getCacheDir().getAbsolutePath(), userId) {
       @Override
       protected void onPostExecute(Exception e) {
         super.onPostExecute(e);
         if (e == null) {
-          if (listener != null) {
-            listener.onLogin(userId, name, dob, aboutMe, getFinalImagePath(), email);
-          }
+          user.setProfileImage(imageUrl);
+          user.setProfileImage(getFinalImagePath());
+          onLoginSuccess(user);
         } else {
           if (e instanceof ImageException) {
             onLoginError(e.getMessage());
@@ -120,6 +132,16 @@ public class FaceBookHelper {
         }
       }
     }.execute();
+  }
+
+  private String generateImagePath(String userId) {
+    return "https://graph.facebook.com/" + userId + "/picture?type=large";
+  }
+
+  private void onLoginSuccess(User user) {
+    if (listener != null) {
+      listener.onLogin(user);
+    }
   }
 
   private void onLoginError() {
