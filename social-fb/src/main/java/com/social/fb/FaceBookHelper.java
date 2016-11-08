@@ -23,7 +23,7 @@ import com.social.fb.downloader.ImageDownloaderTask;
 import com.social.fb.downloader.ImageException;
 import com.social.fb.models.User;
 import com.social.fb.utils.Utils;
-import java.util.Arrays;
+import java.util.Collection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,11 +52,11 @@ public class FaceBookHelper {
     this.listener = listener;
   }
 
-  public void login() {
-    login(false);
+  public void login(Collection<String> permissions) {
+    login(permissions, false);
   }
 
-  public void login(final boolean isImageDownload) {
+  public void login(Collection<String> permissions, final boolean isImageDownload) {
     if (FacebookSdk.getApplicationId() == null) {
       throw new RuntimeException("Facebook app id not available.");
     }
@@ -79,9 +79,7 @@ public class FaceBookHelper {
             onLoginError(exception.toString());
           }
         });
-    LoginManager.getInstance()
-        .logInWithReadPermissions(activity,
-            Arrays.asList("email", "public_profile", "user_birthday", "user_about_me"));
+    LoginManager.getInstance().logInWithReadPermissions(activity, permissions);
   }
 
   public void logout() {

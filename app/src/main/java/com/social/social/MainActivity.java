@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.social.fb.FaceBookHelper;
 import com.social.fb.FacebookLoginListener;
 import com.social.fb.models.User;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements FacebookLoginListener {
 
@@ -39,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
   }
 
   private void loginWithFb() {
-    faceBookHelper.login(true);
+    faceBookHelper.login(Arrays.asList("email", "public_profile", "user_birthday", "user_about_me"),
+        true);
   }
 
   @Override
