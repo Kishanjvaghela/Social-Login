@@ -9,3 +9,4 @@
 /.idea/
 /app/build/
 /gradle/
+/app/src/main/java/com/social/social/Conts.java
