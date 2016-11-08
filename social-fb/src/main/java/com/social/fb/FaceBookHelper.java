@@ -9,6 +9,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
@@ -30,26 +31,33 @@ import org.json.JSONObject;
  */
 
 public class FaceBookHelper {
-  public static final String TAG = "FaceBookHelper";
-  CallbackManager callbackManager;
-  ShareDialog shareDialog;
-  Activity activity;
-  FacebookLoginListener listener;
+  private static final String TAG = "FaceBookHelper";
+  private CallbackManager callbackManager;
+  private ShareDialog shareDialog;
+  private Activity activity;
+  private FacebookLoginListener listener;
 
   public FaceBookHelper(Activity activity) {
     this.activity = activity;
     callbackManager = CallbackManager.Factory.create();
   }
 
-  public void setListener(FacebookLoginListener listner) {
-    this.listener = listner;
+  public static void init(String fbId) {
+    FacebookSdk.setApplicationId(fbId);
+  }
+
+  public void setListener(FacebookLoginListener listener) {
+    this.listener = listener;
   }
 
   public void login() {
-
+    login(false);
   }
 
   public void login(final boolean isImageDownload) {
+    if (FacebookSdk.getApplicationId() == null) {
+      throw new RuntimeException("Facebook app id not available.");
+    }
     LoginManager.getInstance()
         .registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
           @Override
