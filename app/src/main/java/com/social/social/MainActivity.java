@@ -24,13 +24,24 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
     faceBookHelper.setListener(this);
     statusTextView = (TextView) findViewById(R.id.status);
     resultTextView = (TextView) findViewById(R.id.resultText);
-    Button button = (Button) findViewById(R.id.login);
-    button.setOnClickListener(new View.OnClickListener() {
+    Button fbLogin = (Button) findViewById(R.id.loginWithFb);
+    fbLogin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         loginWithFb();
       }
     });
+    Button googleLogin = (Button) findViewById(R.id.loginWithGoogle);
+    googleLogin.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        loginWithGoogle();
+      }
+    });
+  }
+
+  private void loginWithGoogle() {
+    //TODO login with google
   }
 
   @Override
