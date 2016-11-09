@@ -1,4 +1,29 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+ext {
+  bintrayRepo = 'maven'
+  bintrayName = 'Facebook-Login'
+
+  publishedGroupId = 'com.social.fb'
+  libraryName = 'Facebook-Login'
+  artifact = 'Facebook-Login'
+
+  libraryDescription = 'Facebook Login'
+
+  siteUrl = 'https://github.com/Kishanjvaghela/Social-Login'
+  gitUrl = 'https://github.com/Kishanjvaghela/Social-Login.git'
+
+  libraryVersion = '0.1'
+
+  developerId = 'kishanvaghela'
+  developerName = 'Kishan Vaghela'
+  developerEmail = 'kishan.j.vaghela@gmail.com'
+
+  licenseName = 'The Apache Software License, Version 2.0'
+  licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+  allLicenses = ["Apache-2.0"]
+}
 
 android {
   compileSdkVersion 24
@@ -8,7 +33,7 @@ android {
     minSdkVersion 15
     targetSdkVersion 24
     versionCode 1
-    versionName "1.0"
+    versionName "0.1"
 
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
@@ -28,3 +53,5 @@ dependencies {
   androidTestCompile 'com.android.support.test:runner:0.5'
   androidTestCompile 'com.android.support:support-annotations:24.2.1'
 }
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
