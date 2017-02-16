@@ -9,12 +9,15 @@ import android.widget.TextView;
 import com.social.fb.FaceBookHelper;
 import com.social.fb.FacebookLoginListener;
 import com.social.fb.models.User;
+import com.social.google.GoogleLoginHelper;
+import com.social.google.GoogleLoginListener;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements FacebookLoginListener {
 
   private FaceBookHelper faceBookHelper;
   private TextView statusTextView, resultTextView;
+  private GoogleLoginHelper googleLoginHelper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,20 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
     setContentView(R.layout.activity_main);
     faceBookHelper = new FaceBookHelper(this);
     faceBookHelper.setListener(this);
+    googleLoginHelper = new GoogleLoginHelper(this);
+    googleLoginHelper.init(this, new GoogleLoginListener() {
+      @Override
+      public void onLogin(com.social.google.models.User user) {
+        statusTextView.setText(R.string.success);
+        resultTextView.setText(user.toString());
+      }
+
+      @Override
+      public void onError(String error) {
+        statusTextView.setText(R.string.error);
+        if (error != null) resultTextView.setText(error);
+      }
+    });
     statusTextView = (TextView) findViewById(R.id.status);
     resultTextView = (TextView) findViewById(R.id.resultText);
     Button fbLogin = (Button) findViewById(R.id.loginWithFb);
@@ -41,13 +58,18 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
   }
 
   private void loginWithGoogle() {
-    //TODO login with google
+    googleLoginHelper.loginWithGooglePlus();
   }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    faceBookHelper.onActivityResult(requestCode, resultCode, data);
+    if (faceBookHelper != null) {
+      faceBookHelper.onActivityResult(requestCode, resultCode, data);
+    }
+    if (googleLoginHelper != null) {
+      googleLoginHelper.onActivityResult(requestCode, resultCode, data);
+    }
   }
 
   private void loginWithFb() {

@@ -1,1 +1,1 @@
-include ':app', ':social-fb'
+include ':app', ':social-fb', ':social-google'
