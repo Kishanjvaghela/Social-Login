@@ -1,5 +1,29 @@
 apply plugin: 'com.android.library'
 
+ext {
+  bintrayRepo = 'maven'
+  bintrayName = 'social-google'
+
+  publishedGroupId = 'com.social.google'
+  libraryName = 'Social Google'
+  artifact = 'social-google'
+
+  libraryDescription = 'Google Login'
+
+  siteUrl = 'https://github.com/Kishanjvaghela/Social-Login'
+  gitUrl = 'https://github.com/Kishanjvaghela/Social-Login.git'
+
+  libraryVersion = '0.1'
+
+  developerId = 'kishanvaghela'
+  developerName = 'Kishan Vaghela'
+  developerEmail = 'kishan.j.vaghela@gmail.com'
+
+  licenseName = 'The Apache Software License, Version 2.0'
+  licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+  allLicenses = ["Apache-2.0"]
+}
+
 android {
   compileSdkVersion 24
   buildToolsVersion "24.0.3"
@@ -27,3 +51,5 @@ android {
     androidTestCompile 'com.android.support:support-annotations:24.2.1'
   }
 }
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
