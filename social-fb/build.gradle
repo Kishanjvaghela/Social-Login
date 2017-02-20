@@ -14,7 +14,7 @@ ext {
   siteUrl = 'https://github.com/Kishanjvaghela/Social-Login'
   gitUrl = 'https://github.com/Kishanjvaghela/Social-Login.git'
 
-  libraryVersion = '0.2'
+  libraryVersion = '0.3'
 
   developerId = 'kishanvaghela'
   developerName = 'Kishan Vaghela'

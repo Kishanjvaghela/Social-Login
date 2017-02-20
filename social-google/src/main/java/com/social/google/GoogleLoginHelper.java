@@ -86,6 +86,20 @@ public class GoogleLoginHelper {
     return null;
   }
 
+    public GoogleApiClient getGoogleApiClient() {
+        return mGoogleApiClient;
+    }
+
+    public void onDestroy(){
+      if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+          Context context = getCurrentContext();
+          if (context != null && context instanceof FragmentActivity) {
+              mGoogleApiClient.stopAutoManage((FragmentActivity) context);
+              mGoogleApiClient.disconnect();
+          }
+      }
+  }
+
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == RC_SIGN_IN) {
       GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
