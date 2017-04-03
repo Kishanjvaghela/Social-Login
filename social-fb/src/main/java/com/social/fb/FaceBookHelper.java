@@ -56,6 +56,12 @@ public class FaceBookHelper {
     login(permissions, false);
   }
 
+    /**
+     * login with facebook
+     *
+     * @param permissions     permission required to login
+     * @param isImageDownload if true profile image will be download to cache folder
+     */
   public void login(Collection<String> permissions, final boolean isImageDownload) {
     if (FacebookSdk.getApplicationId() == null) {
       throw new RuntimeException("Facebook app id not available.");
@@ -65,7 +71,7 @@ public class FaceBookHelper {
           @Override
           public void onSuccess(LoginResult loginResult) {
             Log.d(TAG, loginResult.toString());
-            getData(loginResult.getAccessToken().getUserId(), isImageDownload);
+            getData(loginResult.getAccessToken(), isImageDownload);
           }
 
           @Override
@@ -86,7 +92,10 @@ public class FaceBookHelper {
     LoginManager.getInstance().logOut();
   }
 
-  private void getData(final String userId, final boolean isImageDownload) {
+  private void getData(AccessToken accessToken, final boolean isImageDownload) {
+
+      final String userId = accessToken.getUserId();
+      final String token = accessToken.getToken();
     new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userId, null, HttpMethod.GET,
         new GraphRequest.Callback() {
           public void onCompleted(GraphResponse response) {
@@ -109,10 +118,10 @@ public class FaceBookHelper {
                 user.setBio(aboutMe);
                 user.setEmail(email);
                 if (isImageDownload) {
-                  downloadImage(userId, user);
+                    downloadImage(userId, user, token);
                 } else {
                   user.setProfileImage(generateImagePath(userId));
-                  onLoginSuccess(user);
+                    onLoginSuccess(user, token);
                 }
               } catch (JSONException e) {
                 e.printStackTrace();
@@ -125,7 +134,7 @@ public class FaceBookHelper {
         }).executeAsync();
   }
 
-  private void downloadImage(final String userId, final User user) {
+  private void downloadImage(final String userId, final User user, final String token) {
     final String imageUrl = generateImagePath(userId);
     new ImageDownloaderTask(imageUrl, activity.getCacheDir().getAbsolutePath(), userId) {
       @Override
@@ -134,7 +143,7 @@ public class FaceBookHelper {
         if (e == null) {
           user.setProfileImage(imageUrl);
           user.setProfileImageLocal(getFinalImagePath());
-          onLoginSuccess(user);
+          onLoginSuccess(user, token);
         } else {
           if (e instanceof ImageException) {
             onLoginError(e.getMessage());
@@ -150,10 +159,10 @@ public class FaceBookHelper {
     return "https://graph.facebook.com/" + userId + "/picture?type=large";
   }
 
-  private void onLoginSuccess(User user) {
-    if (listener != null) {
-      listener.onLogin(user);
-    }
+  private void onLoginSuccess(User user, String token) {
+      if (listener != null) {
+          listener.onLogin(user, token);
+      }
   }
 
   private void onLoginError() {

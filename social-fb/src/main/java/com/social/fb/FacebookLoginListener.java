@@ -7,7 +7,7 @@ import com.social.fb.models.User;
  */
 
 public interface FacebookLoginListener {
-  void onLogin(User user);
+  void onLogin(User user, String token);
 
   void onError(String error);
 }

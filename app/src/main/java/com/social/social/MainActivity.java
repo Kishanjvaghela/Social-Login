@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
   }
 
   @Override
-  public void onLogin(User user) {
+  public void onLogin(User user, String token) {
     statusTextView.setText(R.string.success);
-    resultTextView.setText(user.toString());
+    resultTextView.setText(user.toString() + "\ntoken: " + token);
   }
 
   @Override
