@@ -27,10 +27,11 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
     faceBookHelper.setListener(this);
     googleLoginHelper = new GoogleLoginHelper(this);
     googleLoginHelper.init(this, new GoogleLoginListener() {
+
       @Override
-      public void onLogin(com.social.google.models.User user) {
+      public void onLogin(com.social.google.models.User user, String token) {
         statusTextView.setText(R.string.success);
-        resultTextView.setText(user.toString());
+        resultTextView.setText(user.toString() + "\ntoken: " + token);
       }
 
       @Override
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements FacebookLoginList
   }
 
   private void loginWithGoogle() {
-    googleLoginHelper.loginWithGooglePlus();
+    googleLoginHelper.loginWithGoogle(true);
   }
 
   @Override

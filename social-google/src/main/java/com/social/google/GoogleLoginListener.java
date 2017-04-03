@@ -7,7 +7,7 @@ import com.social.google.models.User;
  */
 
 public interface GoogleLoginListener {
-  void onLogin(User user);
+  void onLogin(User user, String token);
 
   void onError(String error);
 }

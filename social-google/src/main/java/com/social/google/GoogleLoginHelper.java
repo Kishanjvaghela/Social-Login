@@ -7,13 +7,18 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.social.google.downloader.ImageDownloaderTask;
+import com.social.google.downloader.ImageException;
 import com.social.google.models.User;
 
 /**
@@ -29,6 +34,7 @@ public class GoogleLoginHelper {
   private android.app.Fragment appFragment;
   private Activity activity;
   private GoogleLoginListener mGoogleLoginListener;
+  private boolean isImageDownload;
   private GoogleApiClient.OnConnectionFailedListener failedListener =
       new GoogleApiClient.OnConnectionFailedListener() {
         @Override
@@ -49,7 +55,21 @@ public class GoogleLoginHelper {
     this.activity = activity;
   }
 
+    /**
+     * initialize google login helper this will not generate token. for that additionally pass client id
+     * @param fragmentActivity activity context
+     * @param listener GoogleLoginListener
+     */
   public void init(FragmentActivity fragmentActivity, GoogleLoginListener listener) {
+        init(fragmentActivity, listener, null);
+  }
+
+    /**
+     * initialize google login helper this will generate token.
+     * @param fragmentActivity activity context
+     * @param listener GoogleLoginListener
+     */
+  public void init(FragmentActivity fragmentActivity, GoogleLoginListener listener, String googleClientId) {
     mGoogleLoginListener = listener;
     if (fragmentActivity == null) {
       onLoginError("Context is null");
@@ -60,8 +80,13 @@ public class GoogleLoginHelper {
       onLoginError("Context is null");
       return;
     }
-    GoogleSignInOptions gso =
-        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+      GoogleSignInOptions.Builder builder =
+              new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                      .requestEmail();
+      if (googleClientId != null) {
+          builder.requestIdToken(googleClientId);
+      }
+      GoogleSignInOptions gso = builder.build();
     //Initializing google api client
     mGoogleApiClient =
         new GoogleApiClient.Builder(context).enableAutoManage(fragmentActivity, failedListener)
@@ -107,7 +132,8 @@ public class GoogleLoginHelper {
     }
   }
 
-  public void loginWithGooglePlus() {
+  public void loginWithGoogle(boolean isImageDownload) {
+    this.isImageDownload = isImageDownload;
     if (mGoogleApiClient == null) {
       onLoginError("Google Api Client is null");
       return;
@@ -141,7 +167,11 @@ public class GoogleLoginHelper {
           user.setEmail(acct.getEmail());
           user.setName(acct.getDisplayName());
           user.setProfileImage(profileImage);
-          mGoogleLoginListener.onLogin(user);
+            if (!TextUtils.isEmpty(profileImage) && isImageDownload) {
+                downloadImage(user, acct.getIdToken());
+            } else {
+                onLoginSuccess(user, acct.getIdToken());
+            }
         }
       } else {
         onLoginError("Login Failed");
@@ -151,9 +181,39 @@ public class GoogleLoginHelper {
     }
   }
 
+  private void downloadImage(final User user, final String token) {
+    final String imageUrl = user.getProfileImage();
+    new ImageDownloaderTask(imageUrl, activity.getCacheDir().getAbsolutePath(), user.getId()) {
+      @Override
+      protected void onPostExecute(Exception e) {
+        super.onPostExecute(e);
+        if (e == null) {
+          user.setProfileImage(imageUrl);
+          user.setProfileImageLocal(getFinalImagePath());
+          onLoginSuccess(user, token);
+        } else {
+          if (e instanceof ImageException) {
+            onLoginError(e.getMessage());
+          } else {
+            onLoginError();
+          }
+        }
+      }
+    }.execute();
+  }
+  private void onLoginSuccess(User user, String token) {
+    if (mGoogleLoginListener != null) {
+      mGoogleLoginListener.onLogin(user, token);
+    }
+  }
   private void onLoginError(String error) {
     if (mGoogleLoginListener != null) {
       mGoogleLoginListener.onError(error);
     }
   }
+
+  private void onLoginError() {
+    onLoginError("Please try again");
+  }
+
 }
