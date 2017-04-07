@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import com.facebook.AccessToken;
@@ -96,7 +97,7 @@ public class FaceBookHelper {
 
       final String userId = accessToken.getUserId();
       final String token = accessToken.getToken();
-    new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userId, null, HttpMethod.GET,
+      GraphRequest request = new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + userId, null, HttpMethod.GET,
         new GraphRequest.Callback() {
           public void onCompleted(GraphResponse response) {
             /* handle the result */
@@ -131,7 +132,11 @@ public class FaceBookHelper {
               onLoginError();
             }
           }
-        }).executeAsync();
+        });
+    Bundle parameters = new Bundle();
+    parameters.putString("fields", "id,name,email,gender,birthday");
+    request.setParameters(parameters);
+    request.executeAsync();
   }
 
   private void downloadImage(final String userId, final User user, final String token) {
